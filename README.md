@@ -215,7 +215,8 @@ reset-ticks
 ```
 Here is the go procedure for the model (gives description of what happens in a tick)
 
-```to go
+```
+to go
 
   ask phorids [
    if nesting-site? = false [ wiggle fd 1] ; if not at an ant site wiggle phorid!
@@ -238,6 +239,8 @@ Here is the go procedure for the model (gives description of what happens in a t
     ]
 tick
   end
+  
+  
   ```
 
 
