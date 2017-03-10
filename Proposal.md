@@ -1,6 +1,6 @@
 # CMPLXSYS530_ASS4
 
-# Model Proposal for _[Project Name]_
+# Model Proposal for _Ant Nest Clustering model_
 
 Zachary Hajian-Forooshani
 
