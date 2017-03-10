@@ -14,7 +14,7 @@ Zachary Hajian-Forooshani
 
 ### Goal 
 *****
-The goal is to model the interactions of an ant and its parasite in space. I am interested in the spatial patterns the ants create. 
+The goal is to model the interactions of an ant and its parasite in space. I am interested in the spatial patterns the ants create from simple interactions of budding nests and being killed by parasites. 
 &nbsp;  
 ### Justification
 ****
