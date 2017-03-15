@@ -28,6 +28,8 @@ For the ants I will be looking at the rate in which ants are creating new nests 
 
 &nbsp; 
 
+**_LS:_** _Solid, straightforward setup for the model. For the final write up, can flesh out more information from your prior literature review_
+
 
 ## Model Outline
 ****
@@ -35,8 +37,15 @@ For the ants I will be looking at the rate in which ants are creating new nests 
 ### 1) Environment
 
 I will make the world infinte becuase I dont want to have that big effect from the edges of the lattice.
+
+**_LS:_** _Do you mean space will be "wrapped" here in both the x and y directions? I do not think NetLogo is able to handle the unbounded space that would be require to get at a true "inifinite" representation._
+
 It will be 2D.
+
 I plan to have a few different versions of the model. One with an environment that is all homogenous and another where the environment is more heterogenous. In the heterogenous model I will have certain cells that parasites will not be able to exists for prolonged peroids of time. For now I have the patches as owning if they are a nesting site for ants. 
+
+**_LS:_** _You might consider thinking of a parameter you can use to set the level of parasite unfriendly spaces so you can look at a range of heterogeneity._
+
 
 
 &nbsp; 
@@ -47,13 +56,21 @@ I plan to have a few different versions of the model. One with an environment th
 I currently have the ants set up as owning a population. This population grows with ticks but can be lowered by the presence of parasites. When the population is zero then the nest will die and disappear.
 Ant nets will bud in the moore neighborhood given a probability and it will cost the budding nest some amount of its population.
 
+**_LS:_** _Does each individual ant own a "population" attribute or is this reflecting a **nest level** variable that captures the number of ants in a given nest? Potentially might want to reconceptualize "nests" as being your agents if individual ants aren't doing anything._
+
+
 # Parasites (phorids)
 I have the parasites as owning population. The population increases when they are in the presence of ants but decreases as they are searching for ants.
 Parasites will bud once they reach a certain population level and it will cost  a certain about to reproduce.
 Parasites move on the lattice randomly until they find an ant. 
 
+**_LS:_** _See comment above. Might reconceptualize this agent as a "phorid colony"?_
+
 
 # Ants
+
+**_LS:_** _Do you have any agent variable declarations? (i.e. ants-own [..] or phorids-own[..])_
+
 ```
   ask ants [
     grow-nest-pop
@@ -67,21 +84,36 @@ Parasites move on the lattice randomly until they find an ant.
 to stochastic-death
   if random-float 100 < prob-nest-death [die set nesting-site? false]
 end
+
 to grow-nest-pop ;; ant procedure
    set population-nest population-nest + 1
 end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;LS: see earlier comment re: Nests as agents
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to bud-nest
  ; if population-nest > 100 [
    if random-float 100 < prob-of-budding [
      ask one-of neighbors [ if not any? ants-here [sprout-ants 1 set nesting-site? true] ]
         set population-nest (population-nest / bud-cost-ant) ;; lose half of population in budding process
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;LS: This looks like you have your nest population reducing by half, but only have 1 ant to start with on the new site. Does this reflect what happens empirically?
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
       ]
 ;  ]
 end
 
 ;to bud-nest ;; got this one online dont really understand it
 ;  if population-nest > 100 [ if random-float 100 < 5 [
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;LS: FYI, if you're using 0-100 interval for your probabilities, can just use "random" if you don't need increments smaller than 1%
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;    let parent self
 ;      ask neighbors with [ not any? ants-here] [
 ;        let destination self
@@ -137,6 +169,11 @@ to phorids-age ;; phorid procedure
   if remainder (ticks + 1) 10 = 0 [ set population-phorid population-phorid - 5 ]
   if population-phorid < 0 [ die ]
 end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;LS: Overall, this looks very good! Next step would be to think about how to implement the heterogeneity in nests and how it will affect phorids
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ```
 
 
@@ -161,12 +198,23 @@ Sequences are given below
     bud-nest
     nest-death
     stochastic-death
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;LS: Adding stochastic death is interesting. Assume this is reflective of some empirical processes? If so, good to describe that in the model setup.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
   ]
 
 
   ask phorids [
    if nesting-site? = false [ wiggle fd 1] ; if not at an ant site wiggle phorid!
    if nesting-site? = true [ attack-ants ] ; if phorids on ant patch then attack ants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LS: Can replace this statement with a single "If-Else" statement and directly use the variable for it:
+;     ifelse nesting-site? [attack-ants] [ wiggle fd 1]
+;
+; Also, I am assuming that "nesting-site?" is a patch-owned variable? Want to include that in your declariations and environment ;   description here if so.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    leave-ant-nest
    phorids-age
    phorid-babies
@@ -201,6 +249,10 @@ to setup
         set nesting-site? FALSE]
 
       set cluster nobody
+ 
+ ;;;;;;;;;;;;
+ ; LS: Cluster is an outcome variable/reporter, correct?
+ ;;;;;;;;;;;;
     ]
 
   set-default-shape phorids "airplane"
@@ -240,6 +292,10 @@ to go
 tick
   end
   
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LS: Schedule looks good!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  
   
   ```
 
@@ -253,6 +309,8 @@ _What quantitative metrics and/or qualitative features will you use to assess yo
 
 Right now I am looking at the frequency distribution of cluster sizes of ant nests. My clusters are made of any nests that are connected to others by their moore neighborhoods.
 
+**_LS:_** _Sounds good. At some point you might also look into capturing nest age as it sounds relevant to your empirical situation. Also, do you have ideas on stopping criteria (i.e. at what point you will stop the model in order to look at this measure)?_
+
 &nbsp; 
 
 ### 6) Parameter Sweep
@@ -261,6 +319,8 @@ _What parameters are you most interested in sweeping through? What value ranges 
 
 
 I will be sweeping through the cost to budding for ants and the cost of reproduction of parasites. I will also look at how much the parasites gain from ants. The ranges will be between 0 and 1 becuase they will be proportions.
+
+**_LS:_** _Related to an earlier comment, you might also think about thinking about "heterogeneity" as a parameter. At the very least, you'll be wanting to compare the binary conditions of homogeneous vs. heterogeneous._
 
 
 
